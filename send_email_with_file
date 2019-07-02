@@ -1,0 +1,46 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+
+def send_email_from_gem(to_desc, title_desc='GEM NOTIFICATION', contents='welcome', files=None):
+    """
+	发送带附件的邮件
+    now files only support xlsx
+    :param to_desc: 目标邮箱
+    :param title_desc:主题
+    :param contents:内容
+    :param files:附件
+    :return: (true,'') or (False,'错误信息')
+    """
+    mail = {
+        'host': 'smtp.126.com', #域名
+        'user': '用户名',
+        'password': '密码'
+    }
+
+    try:
+        msg = MIMEMultipart()
+
+        msg['Subject'] = title_desc
+        msg['From'] = mail['user']
+        msg['To'] = to_desc
+
+        if files is not None:
+            part = MIMEText('请接收附件')
+            msg.attach(part)
+            for (f_path, f_name) in files.items():
+                part = MIMEApplication(open('%s/%s' % (f_path, f_name), 'rb').read())
+                part.add_header('Content-Disposition', 'attachment', filename=f_name)
+                msg.attach(part)
+
+        else:
+            part = MIMEText(contents)
+            msg.attach(part)
+        smtp = smtplib.SMTP_SSL()
+        smtp.connect(mail['host'])
+        smtp.login(mail['user'], mail['password'])
+        smtp.sendmail(mail['user'], [to_desc], msg.as_string())
+        return True, ''
+    except Exception as exp:
+        return False, str(exp)
