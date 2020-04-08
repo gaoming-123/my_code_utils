@@ -55,6 +55,6 @@ logger = MyLog('default', './database.txt')
 if __name__ == '__main__':
     mylog = MyLog('test', './test.txt')
     mylog.info("I'm info")
-    mylog.warn("I'm warn")
+    mylog.warning("I'm warn")
     mylog.error(u"I'm error 测试中文")
     mylog.critical("I'm critical")
